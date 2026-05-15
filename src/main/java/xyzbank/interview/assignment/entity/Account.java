@@ -1,7 +1,15 @@
-package xyzbank.interview.assignment.entity;
+ package xyzbank.interview.assignment.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 import xyzbank.interview.assignment.enums.AccountType;
 import xyzbank.interview.assignment.enums.CurrencyType;
 
@@ -10,11 +18,15 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "accounts")
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
+@ToString
+
 public class Account {
 
     @Id
@@ -43,6 +55,8 @@ public class Account {
 
     @PrePersist
     public void prePersist() {
+
         this.createdAt = LocalDateTime.now();
     }
 }
+ 

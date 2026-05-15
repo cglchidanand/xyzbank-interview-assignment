@@ -1,13 +1,18 @@
-package xyzbank.interview.assignment.exception;
+ package xyzbank.interview.assignment.exception;
 
 import jakarta.validation.ConstraintViolationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.authentication.BadCredentialsException;
+
 import org.springframework.validation.FieldError;
+
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import xyzbank.interview.assignment.dto.response.ApiResponse;
 
 import java.util.HashMap;
@@ -148,3 +153,4 @@ public class GlobalExceptionHandler {
                 );
     }
 }
+

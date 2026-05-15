@@ -1,4 +1,3 @@
-
 package xyzbank.interview.assignment.controller;
 
 import org.junit.jupiter.api.Test;
@@ -33,6 +32,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 
@@ -47,66 +48,114 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class DocumentControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+ 
+@Autowired
+private MockMvc mockMvc;
 
-    @MockBean
-    private DocumentService documentService;
+@MockBean
+private DocumentService documentService;
 
-    @MockBean
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+@MockBean
+private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @MockBean
-    private JwtUtil jwtUtil;
+@MockBean
+private JwtUtil jwtUtil;
 
-	/*
-	 * @Test void shouldUploadDocumentSuccessfully() throws Exception {
-	 * 
-	 * MockMultipartFile file = new MockMultipartFile( "file", "test.pdf",
-	 * "application/pdf", "sample".getBytes() );
-	 * 
-	 * when(documentService.getCustomerIdByUsername("john123")) .thenReturn(1L);
-	 * 
-	 * doNothing().when(documentService) .uploadDocumentAsync( anyLong(),
-	 * any(byte[].class), anyString(), anyString() );
-	 * 
-	 * mockMvc.perform( multipart("/documents/upload") .file(file) .principal(() ->
-	 * "john123") ) .andDo(print()) .andExpect(status().isOk()); }
-	 */
+@Test
+void shouldUploadDocumentSuccessfully() throws Exception {
 
-	/*
-	 * @Test void shouldFailUploadDocument() throws Exception {
-	 * 
-	 * MockMultipartFile file = new MockMultipartFile( "file", "test.pdf",
-	 * "application/pdf", "sample".getBytes() );
-	 * 
-	 * when(documentService.getCustomerIdByUsername(anyString())) .thenThrow( new
-	 * RuntimeException("Upload failed") );
-	 * 
-	 * mockMvc.perform( multipart("/documents/upload") .file(file) .principal(() ->
-	 * "john123") ) .andDo(print()) .andExpect(status().isBadRequest()); }
-	 */
-	/*
-	 * @Test void shouldDownloadDocumentSuccessfully() throws Exception {
-	 * 
-	 * Resource resource = new ByteArrayResource( "sample".getBytes() ) {
-	 * 
-	 * @Override public String getFilename() { return "test.pdf"; } };
-	 * 
-	 * when(documentService.downloadDocument(anyString())) .thenReturn(resource);
-	 * 
-	 * mockMvc.perform( get("/documents/download") .principal(() -> "john123") )
-	 * .andDo(print()) .andExpect(status().isOk()); }
-	 */
+    MockMultipartFile file =
+            new MockMultipartFile(
+                    "file",
+                    "test.pdf",
+                    "application/pdf",
+                    "sample".getBytes()
+            );
 
-	/*
-	 * @Test void shouldFailDownloadDocument() throws Exception {
-	 * 
-	 * when(documentService.downloadDocument(anyString())) .thenThrow( new
-	 * RuntimeException("Download failed") );
-	 * 
-	 * mockMvc.perform( get("/documents/download") .principal(() -> "john123") )
-	 * .andDo(print()) .andExpect(status().isInternalServerError()); }
-	 */
+    when(documentService.getCustomerIdByUsername("john123"))
+            .thenReturn(1L);
+
+    doNothing().when(documentService)
+            .uploadDocumentAsync(
+                    anyLong(),
+                    any(byte[].class),
+                    anyString(),
+                    anyString()
+            );
+
+    mockMvc.perform(
+                    multipart("/documents/upload")
+                            .file(file)
+                            .with(user("john123"))
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
 }
 
+@Test
+void shouldFailUploadDocument() throws Exception {
+
+    MockMultipartFile file =
+            new MockMultipartFile(
+                    "file",
+                    "test.pdf",
+                    "application/pdf",
+                    "sample".getBytes()
+            );
+
+    when(documentService.getCustomerIdByUsername("john123"))
+            .thenThrow(
+                    new RuntimeException("Upload failed")
+            );
+
+    mockMvc.perform(
+                    multipart("/documents/upload")
+                            .file(file)
+                            .with(user("john123"))
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest());
+}
+
+@Test
+void shouldDownloadDocumentSuccessfully() throws Exception {
+
+    Resource resource =
+            new ByteArrayResource(
+                    "sample".getBytes()
+            ) {
+                @Override
+                public String getFilename() {
+                    return "test.pdf";
+                }
+            };
+
+    when(documentService.downloadDocument("john123"))
+            .thenReturn(resource);
+
+    mockMvc.perform(
+                    get("/documents/download")
+                            .with(user("john123"))
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+}
+
+@Test
+void shouldFailDownloadDocument() throws Exception {
+
+    when(documentService.downloadDocument("john123"))
+            .thenThrow(
+                    new RuntimeException("Download failed")
+            );
+
+    mockMvc.perform(
+                    get("/documents/download")
+                            .with(user("john123"))
+            )
+            .andDo(print())
+            .andExpect(status().isInternalServerError());
+}
+
+
+}
